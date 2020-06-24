@@ -10,6 +10,7 @@ from rest_framework import permissions
 from rest_framework import generics
 from django.contrib.auth.models import User
 from .permissions import IsOwnerOrReadOnly
+from rest_framework.reverse import  reverse
 # from rest_framework.permissions import IsAdminUser
 
 import json
@@ -42,7 +43,6 @@ class Banklist(generics.ListCreateAPIView):
     def perform_create(self,serializer):
         serializer.save(owner=self.request.user)
 
-
 class Bankdetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
     queryset = bankprofile1 = Bankprofile.objects.all()
@@ -57,7 +57,15 @@ class Userlist(generics.ListCreateAPIView):
 class Userdetails(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    # --------------------------------------------------------------------------------------------------
 
+class ApiRoot(APIView):
+    def get(self,request):
+        return Response({
+            # 'bankprofile': reverse('bankprofile',request=request),
+            'banks': reverse('banks',request=request),
+            'users': reverse('users',request=request) 
+        })
 
 
 

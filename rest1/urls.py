@@ -15,25 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from bankapp.views import bankprofilelist,Banklist,Bankdetails
-from empapp import views
  
-
-from rest_framework import routers
-router = routers.DefaultRouter()
-router.register('emp',views.EmployeeCRUDCBV, basename='emp')
-router.register(r'users',views.UserViewSet,basename='users')
-router.register('groups',views.GroupViewSet, basename='groups')
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('rest_framework.urls')),
-    path('api/',include(router.urls)),#for routers shown above emp,users,groups
+    path('',include('bankapp.urls')),
+    path('',include('empapp.urls')),
 
-    path('bankprofile/', bankprofilelist.as_view()),#for bank apiview
-
-    path('banklist/', Banklist.as_view()),
-    path('bankdetails/<int:pk>/', Bankdetails.as_view()),
-    path('',include('bankapp.urls'))
 
 ]
