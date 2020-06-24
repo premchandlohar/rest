@@ -6,6 +6,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
+from rest_framework import permissions
+from rest_framework import generics
+from django.contrib.auth.models import User
+from .permissions import IsOwnerOrReadOnly
+# from rest_framework.permissions import IsAdminUser
 
 import json
 from .models import Bankprofile
@@ -13,17 +18,45 @@ from validator import *
 from django.db import transaction
 
 class bankprofilelist(APIView):
+    # Permission_classes = [permissions.IsAuthenticated,permissions.IsAdminUser]#testing purpose comment
 
     def get(self,request):
         bankprofile1 = Bankprofile.objects.all()
         serializer = BankprofileSerializer(bankprofile1,many=True)
         return Response(serializer.data)
+
     
     def post(self,request):
         serializer = BankprofileSerializer(data=request.data)
         if (serializer.is_valid()):
             serializer.save()
-            Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+
+# ---------------------------------------------------------------------------------------------
+
+class Banklist(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    queryset = Bankprofile.objects.all()
+    serializer_class = BankprofileSerializer
+
+    def perform_create(self,serializer):
+        serializer.save(owner=self.request.user)
+
+
+class Bankdetails(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
+    queryset = bankprofile1 = Bankprofile.objects.all()
+    serializer_class = BankprofileSerializer
+# --------------------------------------------------------------------------------------------------
+
+class Userlist(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    # permission_classes = [IsAdminUser]
+
+class Userdetails(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 

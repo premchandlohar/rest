@@ -12,6 +12,7 @@ class Bankprofile(models.Model):
     contact = models.CharField(max_length=10)
     city = models.CharField(max_length=30)
     district = models.CharField(max_length=30)
+    owner = models.ForeignKey('auth.User',null=True, blank=True, related_name='Bankprofiles', on_delete=models.CASCADE)
     
 
     def __str__(self):
